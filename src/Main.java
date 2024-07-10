@@ -9,8 +9,10 @@ public class Main extends JFrame {
 
     private JButton[][] button = new JButton[8][8]; // 버튼
     private JLabel[][] labels = new JLabel[8][8]; // 버튼 위에 바둑돌 사진
-    private JLabel player1_timerLabel = new JLabel();
-    private JLabel player2_timerLabel = new JLabel();
+    private JLabel player1_timerLabel = new JLabel("00");
+    private JLabel player2_timerLabel = new JLabel("00");
+    private JLabel player1_scoreLabel = new JLabel("0");
+    private JLabel player2_scoreLabel = new JLabel("0");
     private char[][] board = new char[8][8]; // 게임 보드 상태를 저장하는 2차원 배열
     private Timer player1_timer;
     private Timer player2_timer;
@@ -53,6 +55,19 @@ public class Main extends JFrame {
         player2_timerLabel.setBounds(875, 230, 100, 35);
         player2_timerLabel.setFont(new Font("Serif", Font.BOLD, 30));
         ImagePanel.add(player2_timerLabel);
+
+        // 플레이어1 점수 레이블 설정
+        player1_scoreLabel.setBounds(95, 365, 100, 35);
+        player1_scoreLabel.setFont(new Font("Serif", Font.BOLD, 30));
+        ImagePanel.add(player1_scoreLabel);
+
+        // 플레이어2 점수 레이블 설정
+        player2_scoreLabel.setBounds(890, 365, 100, 35);
+        player2_scoreLabel.setFont(new Font("Serif", Font.BOLD, 30));
+        ImagePanel.add(player2_scoreLabel);
+
+
+
 
         // 게임 시작 버튼
         JButton gameStart = new JButton("게임시작");
@@ -102,7 +117,8 @@ public class Main extends JFrame {
         initializeBoard();
     }
 
-    // 게임 시작 메소드
+
+    // 게임 시작 메소드------------------------------------------------------------------------
     private void startGame() {
         // 타이머 설정
         player1_timeRemaining = 180; // 180초로 설정
@@ -158,9 +174,10 @@ public class Main extends JFrame {
         // 보드 초기화 및 버튼 활성화
         initializeBoard();
         enableValidMoves();
+
     }
 
-    private void stopGame() {
+    private void stopGame() { //---------------------------------------------------------------
         if (player1_timer != null) {
             player1_timer.cancel();
         }
@@ -192,6 +209,7 @@ public class Main extends JFrame {
         board[4][3] = 'B';
         board[4][4] = 'W';
         currentPlayer = 'B';
+
         playing_baduk(); // 바둑두기
     }
 
@@ -231,7 +249,7 @@ public class Main extends JFrame {
     }
 
     private boolean isValidMove(int row, int col, char player) {
-        // 유효한 이동인지 확인하는 로직 추가
+        // 가능한 이동인지 확인
         if (board[row][col] != ' ') return false;
 
         char opponent = (player == 'B') ? 'W' : 'B';
@@ -263,9 +281,10 @@ public class Main extends JFrame {
         }
         return false;
     }
+    // 바둑돌 색 뒤집기------------------------------------------------------------
 
     private void placeDisc(int row, int col, char player) {
-        // 돌을 놓고 뒤집기
+
         board[row][col] = player;
 
         char opponent = (player == 'B') ? 'W' : 'B';
@@ -303,6 +322,7 @@ public class Main extends JFrame {
                 c += dCol[direction];
             }
         }
+
     }
 
     private void enableValidMoves() {
@@ -312,10 +332,10 @@ public class Main extends JFrame {
             }
         }
     }
+  // 게임 종료 조건----------------------------------------------------------
 
-    // 게임 종료 조건
     private boolean isGameOver() {
-        // 유효한 이동 가능한 곳이 있는지 확인하여 게임 종료 조건 검사
+        // 이동 가능한 곳이 있는지 확인하여 게임 종료 조건 검사
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] == ' ' && (isValidMove(i, j, 'B') || isValidMove(i, j, 'W'))) {
@@ -325,7 +345,7 @@ public class Main extends JFrame {
         }
         return true;
     }
-
+// 결과판 띄우기 --------------------------------------------------------------
     private void announceWinner() {
         // 승자 발표 로직 추가
         int blackCount = 0, whiteCount = 0;
@@ -338,12 +358,28 @@ public class Main extends JFrame {
                 }
             }
         }
-        String winner = (blackCount > whiteCount) ? "Black wins!" : "White wins!";
+        String winner = (blackCount > whiteCount) ? "축하합니다~! Player1 가 이겼습니다!" : "축하합니다~! Player2 가 이겼습니다!";
         if (blackCount == whiteCount) {
             winner = "It's a tie!";
         }
         JOptionPane.showMessageDialog(this, "Game Over\nBlack: " + blackCount + "\nWhite: " + whiteCount + "\n" + winner);
     }
+
+    //각각 점수 세기----------------------------------------------------------------
+    private void count_score(){
+
+        int blackCount = 0, whiteCount = 0;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == 'B') {
+                    blackCount++;
+                } else if (board[i][j] == 'W') {
+                    whiteCount++;
+                }
+            }
+        }
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Main().setVisible(true)); // 이거 안 하면 화면이 꺼져버림
