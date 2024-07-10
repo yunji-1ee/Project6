@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -292,10 +290,10 @@ public class Main extends JFrame {
         }
         return false;
     }
+
     // 바둑돌 색 뒤집기------------------------------------------------------------
 
     private void placeDisc(int row, int col, char player) {
-
         board[row][col] = player;
 
         char opponent = (player == 'B') ? 'W' : 'B';
@@ -341,7 +339,7 @@ public class Main extends JFrame {
             for (int j = 0; j < 8; j++) {
                 if (isValidMove(i, j, currentPlayer)) {
                     button[i][j].setEnabled(true);
-                    labels[i][j].setIcon(resizeIcon(starImagePath, labels[i][j].getWidth()-3, labels[i][j].getHeight()));
+                    labels[i][j].setIcon(resizeIcon(starImagePath, labels[i][j].getWidth() - 3, labels[i][j].getHeight()));
                 } else {
                     button[i][j].setEnabled(false);
                     if (board[i][j] == ' ') {
@@ -368,25 +366,41 @@ public class Main extends JFrame {
             // 다음 플레이어로 턴 넘기기
             currentPlayer = (currentPlayer == 'B') ? 'W' : 'B';
             enableValidMoves(); // 유효한가?
+            // 현재 플레이어도 유효한 이동이 없는 경우, 게임 종료
             if (!hasValidMove) {
-                // 다시 턴 패스 확인
-                checkPassTurn();
+                if (!anyValidMoves()) {
+                    announceWinner();
+                }
             }
         }
+    }
+
+    private boolean anyValidMoves() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (isValidMove(i, j, 'B') || isValidMove(i, j, 'W')) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // 게임 종료 조건----------------------------------------------------------
 
     private boolean isGameOver() {
         // 이동 가능한 곳이 있는지 확인하여 게임 종료 조건 검사
+        if (!anyValidMoves()) {
+            return true;
+        }
+        // 모든 칸이 채워졌는지 확인
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (board[i][j] == ' ' && (isValidMove(i, j, 'B') || isValidMove(i, j, 'W'))) {
+                if (board[i][j] == ' ') {
                     return false;
                 }
             }
         }
-        announceWinner();
         return true;
     }
 
@@ -394,11 +408,15 @@ public class Main extends JFrame {
     private void announceWinner() {
         // 승자 발표 로직 추가
 
-        if (player1_timeRemaining <= 0)
+        if (player1_timeRemaining <= 0) {
+            stopGame();
             JOptionPane.showMessageDialog(this, "\uD83D\uDCA5 Game Over \uD83D\uDCA5 \n player2 가 이겼습니다 ~!");
-        else if (player2_timeRemaining <= 0)
+        }
+            else if (player2_timeRemaining <= 0) {
+                stopGame();
             JOptionPane.showMessageDialog(this, "\uD83D\uDCA5 Game Over \uD83D\uDCA5 \n player1 이 이겼습니다 ~!");
-        else {
+        }else {
+                stopGame();
             int blackCount = 0, whiteCount = 0;
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
