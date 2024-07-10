@@ -121,8 +121,8 @@ public class Main extends JFrame {
     // 게임 시작 메소드------------------------------------------------------------------------
     private void startGame() {
         // 타이머 설정
-        player1_timeRemaining = 180; // 180초로 설정
-        player2_timeRemaining = 180; // 180초로 설정
+        player1_timeRemaining = 5; // 180초로 설정
+        player2_timeRemaining = 5; // 180초로 설정
 
         player1_timerLabel.setText(String.valueOf(player1_timeRemaining));
         player2_timerLabel.setText(String.valueOf(player2_timeRemaining));
@@ -213,6 +213,12 @@ public class Main extends JFrame {
         board[4][3] = 'B';
         board[4][4] = 'W';
         currentPlayer = 'B';
+
+        player1_timeRemaining = 5; // 180초로 설정
+        player2_timeRemaining = 5; // 180초로 설정
+
+        player1_timerLabel.setText(String.valueOf(player1_timeRemaining));
+        player2_timerLabel.setText(String.valueOf(player2_timeRemaining));
 
         playing_baduk(); // 바둑두기
     }
