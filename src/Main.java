@@ -44,11 +44,6 @@ public class Main extends JFrame {
         ImagePanel.setBounds(0, 0, 1000, 750);
         add(ImagePanel);
 
-        // 게임 시작 버튼
-        JButton gameStart = new JButton("게임시작");
-        gameStart.setBounds(845, 20, 100, 35);
-        ImagePanel.add(gameStart);
-
         // 플레이어1 타이머 레이블 설정
         player1_timerLabel.setBounds(85,230, 100, 35);
         player1_timerLabel.setFont(new Font("Serif", Font.BOLD, 30));
@@ -60,10 +55,16 @@ public class Main extends JFrame {
         ImagePanel.add(player2_timerLabel);
 
 
-        // 끝내기 버튼
-        JButton finish = new JButton("끝내기");
-        finish.setBounds(845, 60, 100, 35);
-        ImagePanel.add(finish);
+        // 게임 시작 버튼
+        JButton gameStart = new JButton("게임시작");
+        gameStart.setBounds(845, 20, 100, 35);
+        ImagePanel.add(gameStart);
+
+
+        // 멈추기 버튼
+        JButton stop = new JButton("멈추기");
+        stop.setBounds(845, 60, 100, 35);
+        ImagePanel.add(stop);
 
         // 흑 & 백 돌 버튼 설정----------------------------------------------------------------------
         int x = 197, y = 126;
@@ -94,7 +95,13 @@ public class Main extends JFrame {
 
         // 게임 시작 버튼
         gameStart.addActionListener(e -> startGame());
-            initializeBoard();
+        initializeBoard();
+
+        // 멈추기 버튼 : 멈추기 버튼 누르면 두 플레이어의 타이머가 멈추고, 버튼이름을 '다시 시작'으로 바꾸기(다시시작 버튼을 누르면 멈췄던 기준 다음 플레이어차례)
+        stop.addActionListener(e -> startGame());
+        initializeBoard();
+
+
     }
 
     // 게임 시작 메소드
