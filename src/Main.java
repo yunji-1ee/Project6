@@ -11,8 +11,8 @@ public class Main extends JFrame {
     private JLabel player2_timerLabel = new JLabel("00");
     private JLabel player1_scoreLabel = new JLabel(" ");
     private JLabel player2_scoreLabel = new JLabel(" ");
-    private JLabel player1_winsLabel = new JLabel("0 : 0"); // 플레이어1의 승리 라운드 레이블
-    private JLabel player2_winsLabel = new JLabel("0 : 0"); // 플레이어2의 승리 라운드 레이블
+    private JLabel player1_winsLabel = new JLabel("0:0"); // 플레이어1의 승리 라운드 레이블
+    private JLabel player2_winsLabel = new JLabel("0:0"); // 플레이어2의 승리 라운드 레이블
     private char[][] board = new char[8][8]; // 게임 보드 상태를 저장하는 2차원 배열
     private Timer player1_timer;
     private Timer player2_timer;
@@ -49,12 +49,12 @@ public class Main extends JFrame {
         add(ImagePanel);
 
         // 플레이어1 타이머 레이블 설정
-        player1_timerLabel.setBounds(87, 348, 100, 35);
+        player1_timerLabel.setBounds(90, 348, 100, 35);
         player1_timerLabel.setFont(new Font("Serif", Font.BOLD, 30));
         ImagePanel.add(player1_timerLabel);
 
         // 플레이어2 타이머 레이블 설정
-        player2_timerLabel.setBounds(877, 348, 100, 35);
+        player2_timerLabel.setBounds(880, 348, 100, 35);
         player2_timerLabel.setFont(new Font("Serif", Font.BOLD, 30));
         ImagePanel.add(player2_timerLabel);
 
@@ -69,12 +69,12 @@ public class Main extends JFrame {
         ImagePanel.add(player2_scoreLabel);
 
         // 플레이어1 승리 라운드 레이블 설정
-        player1_winsLabel.setBounds(62, 436, 200, 100);
+        player1_winsLabel.setBounds(72, 436, 200, 100);
         player1_winsLabel.setFont(new Font("Serif", Font.PLAIN, 40));
         ImagePanel.add(player1_winsLabel);
 
         // 플레이어2 승리 라운드 레이블 설정
-        player2_winsLabel.setBounds(854, 436, 200, 100);
+        player2_winsLabel.setBounds(864, 436, 200, 100);
         player2_winsLabel.setFont(new Font("Serif", Font.PLAIN, 40));
         ImagePanel.add(player2_winsLabel);
 
