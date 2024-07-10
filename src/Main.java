@@ -7,16 +7,20 @@ public class Main extends JFrame {
 
     private JButton[][] button = new JButton[8][8]; // 버튼
     private JLabel[][] labels = new JLabel[8][8]; // 버튼 위에 바둑돌 사진
-    private JLabel player1_timerLabel = new JLabel(" ");
-    private JLabel player2_timerLabel = new JLabel(" ");
+    private JLabel player1_timerLabel = new JLabel("00");
+    private JLabel player2_timerLabel = new JLabel("00");
     private JLabel player1_scoreLabel = new JLabel(" ");
     private JLabel player2_scoreLabel = new JLabel(" ");
+    private JLabel player1_winsLabel = new JLabel("0 : 0"); // 플레이어1의 승리 라운드 레이블
+    private JLabel player2_winsLabel = new JLabel("0 : 0"); // 플레이어2의 승리 라운드 레이블
     private char[][] board = new char[8][8]; // 게임 보드 상태를 저장하는 2차원 배열
     private Timer player1_timer;
     private Timer player2_timer;
     private int player1_timeRemaining;
     private int player2_timeRemaining;
     private char currentPlayer = 'B'; // 게임 턴 - 흑인지 백인지
+    private int player1_wins = 0; // 플레이어1 승리 수
+    private int player2_wins = 0; // 플레이어2 승리 수
 
     // 바둑돌 및 별 이미지 경로
     private final String blackImagePath = "/Users/leeyunji/Desktop/2024_SummerStudy/Project6_OthelloGame/src/Image/black.png";
@@ -45,24 +49,34 @@ public class Main extends JFrame {
         add(ImagePanel);
 
         // 플레이어1 타이머 레이블 설정
-        player1_timerLabel.setBounds(85, 230, 100, 35);
+        player1_timerLabel.setBounds(87, 348, 100, 35);
         player1_timerLabel.setFont(new Font("Serif", Font.BOLD, 30));
         ImagePanel.add(player1_timerLabel);
 
         // 플레이어2 타이머 레이블 설정
-        player2_timerLabel.setBounds(875, 230, 100, 35);
+        player2_timerLabel.setBounds(877, 348, 100, 35);
         player2_timerLabel.setFont(new Font("Serif", Font.BOLD, 30));
         ImagePanel.add(player2_timerLabel);
 
         // 플레이어1 점수 레이블 설정
-        player1_scoreLabel.setBounds(95, 365, 100, 35);
+        player1_scoreLabel.setBounds(90, 512, 100, 35);
         player1_scoreLabel.setFont(new Font("Serif", Font.BOLD, 30));
         ImagePanel.add(player1_scoreLabel);
 
         // 플레이어2 점수 레이블 설정
-        player2_scoreLabel.setBounds(890, 365, 100, 35);
+        player2_scoreLabel.setBounds(885, 512, 100, 35);
         player2_scoreLabel.setFont(new Font("Serif", Font.BOLD, 30));
         ImagePanel.add(player2_scoreLabel);
+
+        // 플레이어1 승리 라운드 레이블 설정
+        player1_winsLabel.setBounds(62, 436, 200, 100);
+        player1_winsLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+        ImagePanel.add(player1_winsLabel);
+
+        // 플레이어2 승리 라운드 레이블 설정
+        player2_winsLabel.setBounds(854, 436, 200, 100);
+        player2_winsLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+        ImagePanel.add(player2_winsLabel);
 
         // 게임 시작 버튼--------------------------------------------------------------------------------
         JButton gameStart = new JButton("게임시작");
@@ -173,7 +187,6 @@ public class Main extends JFrame {
         initializeBoard();
         enableValidMoves();
         checkPassTurn(); // 턴 패스 확인
-
     }
 
     private void stopGame() { //---------------------------------------------------------------
@@ -410,13 +423,18 @@ public class Main extends JFrame {
 
         if (player1_timeRemaining <= 0) {
             stopGame();
+            player2_wins++;
+            player1_winsLabel.setText(player1_wins + ":" + player2_wins);
+            player2_winsLabel.setText(player2_wins + ":" + player1_wins);
             JOptionPane.showMessageDialog(this, "\uD83D\uDCA5 Game Over \uD83D\uDCA5 \n player2 가 이겼습니다 ~!");
-        }
-            else if (player2_timeRemaining <= 0) {
-                stopGame();
+        } else if (player2_timeRemaining <= 0) {
+            stopGame();
+            player1_wins++;
+            player1_winsLabel.setText(player1_wins + ":" + player2_wins);
+            player2_winsLabel.setText(player2_wins + ":" + player1_wins);
             JOptionPane.showMessageDialog(this, "\uD83D\uDCA5 Game Over \uD83D\uDCA5 \n player1 이 이겼습니다 ~!");
-        }else {
-                stopGame();
+        } else {
+            stopGame();
             int blackCount = 0, whiteCount = 0;
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
@@ -427,12 +445,20 @@ public class Main extends JFrame {
                     }
                 }
             }
-            String winner = (blackCount > whiteCount) ? "\uD83C\uDF8A Player1 가 이겼습니다! \uD83C\uDF8A" : "\uD83C\uDF8A 축하합니다~! Player2 가 이겼습니다! \uD83C\uDF8A";
-            if (blackCount == whiteCount) {
+            String winner;
+            if (blackCount > whiteCount) {
+                winner = "\uD83C\uDF8A Player1 가 이겼습니다! \uD83C\uDF8A";
+                player1_wins++;
+            } else if (whiteCount > blackCount) {
+                winner = "\uD83C\uDF8A 축하합니다~! Player2 가 이겼습니다! \uD83C\uDF8A";
+                player2_wins++;
+            } else {
                 winner = "비겼습니다 ..!.! \n 한 번 더 ㄱ ??";
             }
+            player1_winsLabel.setText(player1_wins + " : " + player2_wins);
+            player2_winsLabel.setText(player2_wins + " : " + player1_wins);
             JOptionPane.showMessageDialog(this, "\uD83D\uDCA5 Game Over \uD83D\uDCA5 \nBlack: " + blackCount + "\nWhite: " + whiteCount + "\n" + winner);
-        } //else
+        }
         initializeBoard();
     }
 
