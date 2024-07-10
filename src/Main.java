@@ -148,7 +148,9 @@ public class Main extends JFrame {
 
                     if (player1_timeRemaining <= 0) {
                         player1_timer.cancel();
+                        player2_timer.cancel();
                         player1_timerLabel.setText("Time Over");
+                        announceWinner();
                     }
                 });
             }
@@ -164,8 +166,10 @@ public class Main extends JFrame {
                     }
 
                     if (player2_timeRemaining <= 0) {
+                        player1_timer.cancel();
                         player2_timer.cancel();
                         player2_timerLabel.setText("Time Over");
+                       announceWinner();
                     }
                 });
             }
@@ -232,7 +236,7 @@ public class Main extends JFrame {
     }
 
     private void handleButtonClick(int i, int j) {
-        // 유효한 이동인지 확인하고 돌을 놓는 로직 추가
+        // 가능한 이동인지 확인하고 돌 놓기
         if (isValidMove(i, j, currentPlayer)) {
             placeDisc(i, j, currentPlayer);
 
@@ -240,7 +244,7 @@ public class Main extends JFrame {
             currentPlayer = (currentPlayer == 'B') ? 'W' : 'B';
             playing_baduk(); // 바둑두기
 
-            enableValidMoves(); // 유효한이동
+            enableValidMoves(); // 유효한가?
             // 게임 종료 조건 검사
             if (isGameOver()) {
                 announceWinner();
@@ -348,21 +352,29 @@ public class Main extends JFrame {
 // 결과판 띄우기 --------------------------------------------------------------
     private void announceWinner() {
         // 승자 발표 로직 추가
-        int blackCount = 0, whiteCount = 0;
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (board[i][j] == 'B') {
-                    blackCount++;
-                } else if (board[i][j] == 'W') {
-                    whiteCount++;
+
+            if (player1_timeRemaining <= 0)
+                JOptionPane.showMessageDialog(this, "\uD83D\uDCA5 Game Over \uD83D\uDCA5 \n player2 가 이겼습니다 ~!");
+            else if (player2_timeRemaining <= 0)
+                JOptionPane.showMessageDialog(this, "\uD83D\uDCA5 Game Over \uD83D\uDCA5 \n player1 이 이겼습니다 ~!");
+            else {
+                int blackCount = 0, whiteCount = 0;
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        if (board[i][j] == 'B') {
+                            blackCount++;
+                        } else if (board[i][j] == 'W') {
+                            whiteCount++;
+                        }
+                    }
                 }
-            }
-        }
-        String winner = (blackCount > whiteCount) ? "축하합니다~! Player1 가 이겼습니다!" : "축하합니다~! Player2 가 이겼습니다!";
-        if (blackCount == whiteCount) {
-            winner = "It's a tie!";
-        }
-        JOptionPane.showMessageDialog(this, "Game Over\nBlack: " + blackCount + "\nWhite: " + whiteCount + "\n" + winner);
+                String winner = (blackCount > whiteCount) ? "\uD83C\uDF8A Player1 가 이겼습니다! \uD83C\uDF8A" : "\uD83C\uDF8A 축하합니다~! Player2 가 이겼습니다! \uD83C\uDF8A";
+                if (blackCount == whiteCount) {
+                    winner = "비겼습니다 ..!.! \n 한 번 더 ㄱ ??";
+                }
+                JOptionPane.showMessageDialog(this, "\uD83D\uDCA5 Game Over \uD83D\uDCA5 \nBlack: " + blackCount + "\nWhite: " + whiteCount + "\n" + winner);
+            } //else
+            initializeBoard();
     }
 
     //각각 점수 세기----------------------------------------------------------------
@@ -373,13 +385,15 @@ public class Main extends JFrame {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] == 'B') {
                     blackCount++;
+                    System.out.println(blackCount);
+
                 } else if (board[i][j] == 'W') {
                     whiteCount++;
+                    System.out.println(whiteCount);
                 }
             }
         }
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Main().setVisible(true)); // 이거 안 하면 화면이 꺼져버림
