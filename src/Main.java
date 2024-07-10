@@ -20,9 +20,10 @@ public class Main extends JFrame {
     private int player2_timeRemaining;
     private char currentPlayer = 'B'; // 게임 턴 - 흑인지 백인지
 
-    // 바둑돌 사진
+    // 바둑돌 및 별 이미지 경로
     private final String blackImagePath = "/Users/leeyunji/Desktop/2024_SummerStudy/Project6_OthelloGame/src/Image/black.png";
     private final String whiteImagePath = "/Users/leeyunji/Desktop/2024_SummerStudy/Project6_OthelloGame/src/Image/white.png";
+    private final String starImagePath = "/Users/leeyunji/Desktop/2024_SummerStudy/Project6_OthelloGame/src/Image/star.png";
 
     public Main() {
 
@@ -116,8 +117,8 @@ public class Main extends JFrame {
     // 게임 시작 메소드------------------------------------------------------------------------
     private void startGame() {
         // 타이머 설정
-        player1_timeRemaining = 5; // 180초로 설정
-        player2_timeRemaining = 5; // 180초로 설정
+        player1_timeRemaining = 180; // 180초로 설정
+        player2_timeRemaining = 180; // 180초로 설정
 
         player1_timerLabel.setText(String.valueOf(player1_timeRemaining));
         player2_timerLabel.setText(String.valueOf(player2_timeRemaining));
@@ -173,6 +174,7 @@ public class Main extends JFrame {
         // 보드 초기화 및 버튼 활성화
         initializeBoard();
         enableValidMoves();
+        checkPassTurn(); // 턴 패스 확인
 
     }
 
@@ -200,6 +202,7 @@ public class Main extends JFrame {
             for (int j = 0; j < 8; j++) {
                 board[i][j] = ' ';
                 button[i][j].setEnabled(false); // 초기 상태에서 버튼 비활성화
+                labels[i][j].setIcon(null); // 초기 상태에서 별 이미지 제거
             }
         }
         // 초기 돌 4개 가운데 세팅
@@ -209,8 +212,8 @@ public class Main extends JFrame {
         board[4][4] = 'W';
         currentPlayer = 'B';
 
-        player1_timeRemaining = 5; // 180초로 설정
-        player2_timeRemaining = 5; // 180초로 설정
+        player1_timeRemaining = 180; // 180초로 설정
+        player2_timeRemaining = 180; // 180초로 설정
 
         player1_timerLabel.setText(String.valueOf(player1_timeRemaining));
         player2_timerLabel.setText(String.valueOf(player2_timeRemaining));
@@ -230,7 +233,7 @@ public class Main extends JFrame {
                 else if (board[i][j] == 'W') { // 보드 게임 상태가 화이트 턴이면 흰색 바둑돌 사진을 해당 인덱스에 올리기
                     labels[i][j].setIcon(resizeIcon(whiteImagePath, labels[i][j].getWidth(), labels[i][j].getHeight()));
                 } else {
-                    labels[i][j].setIcon(null);
+                    labels[i][j].setIcon(null); // 빈 공간은 이미지 제거
                 }
             }
         }
@@ -247,6 +250,8 @@ public class Main extends JFrame {
             count_score(); // 점수 계산
 
             enableValidMoves(); // 유효한가?
+            checkPassTurn(); // 턴 패스 확인
+
             // 게임 종료 조건 검사
             if (isGameOver()) {
                 announceWinner();
@@ -334,10 +339,42 @@ public class Main extends JFrame {
     private void enableValidMoves() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                button[i][j].setEnabled(isValidMove(i, j, currentPlayer));
+                if (isValidMove(i, j, currentPlayer)) {
+                    button[i][j].setEnabled(true);
+                    labels[i][j].setIcon(resizeIcon(starImagePath, labels[i][j].getWidth()-3, labels[i][j].getHeight()));
+                } else {
+                    button[i][j].setEnabled(false);
+                    if (board[i][j] == ' ') {
+                        labels[i][j].setIcon(null); // 빈 공간은 이미지 제거
+                    }
+                }
             }
         }
     }
+
+    private void checkPassTurn() {
+        boolean hasValidMove = false;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (isValidMove(i, j, currentPlayer)) {
+                    hasValidMove = true;
+                    break;
+                }
+            }
+            if (hasValidMove) break;
+        }
+
+        if (!hasValidMove) {
+            // 다음 플레이어로 턴 넘기기
+            currentPlayer = (currentPlayer == 'B') ? 'W' : 'B';
+            enableValidMoves(); // 유효한가?
+            if (!hasValidMove) {
+                // 다시 턴 패스 확인
+                checkPassTurn();
+            }
+        }
+    }
+
     // 게임 종료 조건----------------------------------------------------------
 
     private boolean isGameOver() {
@@ -349,8 +386,10 @@ public class Main extends JFrame {
                 }
             }
         }
+        announceWinner();
         return true;
     }
+
     // 결과판 띄우기 --------------------------------------------------------------
     private void announceWinner() {
         // 승자 발표 로직 추가
