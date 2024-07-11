@@ -26,12 +26,17 @@ public class Main extends JFrame {
     private int player1_wins = 0; // 플레이어1 승리 수
     private int player2_wins = 0; // 플레이어2 승리 수
     private boolean isPaused = false; // 타이머가 멈춰있는지 여부
+    private boolean night = false; // 밤하늘의 별 모드인지의 여부
     private JButton stopButton; // 멈추기 버튼 참조
+    private JButton modeButton; // 모드 버튼 참조
+    private ImagePanel imagePanel; // 배경 이미지 패널
 
     // 바둑돌 및 별 이미지 경로
     private final String blackImagePath = "/Users/leeyunji/Desktop/2024_SummerStudy/Project6_OthelloGame/src/Image/black.png";
     private final String whiteImagePath = "/Users/leeyunji/Desktop/2024_SummerStudy/Project6_OthelloGame/src/Image/white.png";
     private final String starImagePath = "/Users/leeyunji/Desktop/2024_SummerStudy/Project6_OthelloGame/src/Image/star.png";
+    private final String dayImagePath = "/Users/leeyunji/Desktop/2024_SummerStudy/Project6_OthelloGame/src/Image/Othello.jpg";
+    private final String nightImagePath = "/Users/leeyunji/Desktop/2024_SummerStudy/Project6_OthelloGame/src/Image/Othello1.jpg";
 
     public Main() {
 
@@ -41,78 +46,78 @@ public class Main extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // 배경 이미지 패널 설정
-        JPanel ImagePanel = new JPanel() {
-            Image background = new ImageIcon(getClass().getResource("/Image/Othello.jpg")).getImage();
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-        ImagePanel.setLayout(null);
-        ImagePanel.setBounds(0, 0, 1000, 750);
-        add(ImagePanel);
+        imagePanel = new ImagePanel();
+        imagePanel.setLayout(null);
+        imagePanel.setBounds(0, 0, 1000, 750);
+        add(imagePanel);
 
         // 플레이어1 타이머 레이블 설정
         player1_timerLabel.setBounds(90, 348, 100, 35);
         player1_timerLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        ImagePanel.add(player1_timerLabel);
+        imagePanel.add(player1_timerLabel);
 
         // 플레이어2 타이머 레이블 설정
         player2_timerLabel.setBounds(880, 348, 100, 35);
         player2_timerLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        ImagePanel.add(player2_timerLabel);
+        imagePanel.add(player2_timerLabel);
 
         // 플레이어1 점수 레이블 설정
         player1_scoreLabel.setBounds(90, 512, 100, 35);
         player1_scoreLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        ImagePanel.add(player1_scoreLabel);
+        imagePanel.add(player1_scoreLabel);
 
         // 플레이어2 점수 레이블 설정
         player2_scoreLabel.setBounds(885, 512, 100, 35);
         player2_scoreLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        ImagePanel.add(player2_scoreLabel);
+        imagePanel.add(player2_scoreLabel);
 
         // 플레이어1 승리 라운드 레이블 설정
         player1_winsLabel.setBounds(72, 436, 200, 100);
         player1_winsLabel.setFont(new Font("Serif", Font.PLAIN, 40));
-        ImagePanel.add(player1_winsLabel);
+        imagePanel.add(player1_winsLabel);
 
         // 플레이어2 승리 라운드 레이블 설정
         player2_winsLabel.setBounds(864, 436, 200, 100);
         player2_winsLabel.setFont(new Font("Serif", Font.PLAIN, 40));
-        ImagePanel.add(player2_winsLabel);
+        imagePanel.add(player2_winsLabel);
 
         // 플레이어1 턴 레이블 설정
         player1_turnLabel.setBounds(40, 100, 200, 35);
         player1_turnLabel.setFont(new Font("Arial", Font.PLAIN, 15));
         player1_turnLabel.setForeground(Color.RED);
-        ImagePanel.add(player1_turnLabel);
+        imagePanel.add(player1_turnLabel);
 
         // 플레이어2 턴 레이블 설정
         player2_turnLabel.setBounds(835, 100, 200, 35);
         player2_turnLabel.setFont(new Font("Arial", Font.PLAIN, 15));
         player2_turnLabel.setForeground(Color.RED);
-        ImagePanel.add(player2_turnLabel);
+        imagePanel.add(player2_turnLabel);
 
         // 게임 시작 버튼--------------------------------------------------------------------------------
         JButton gameStart = new JButton("게임시작");
         gameStart.setBounds(845, 20, 100, 35);
-        ImagePanel.add(gameStart);
+        imagePanel.add(gameStart);
 
         // 도움말 버튼
         JButton helpButton = new JButton("\uD83D\uDCA1도움말");
-        helpButton.setBounds(5, 20, 100, 35);
+        helpButton.setBounds(5, 30, 100, 35);
         helpButton.setBorderPainted(false); // 버튼 투명하게 만들기
         helpButton.setContentAreaFilled(false); // 버튼 투명하게 만들기
         helpButton.addActionListener(e -> openHelpLink());
-        ImagePanel.add(helpButton);
+        imagePanel.add(helpButton);
+
+        // 테마 바꾸기 버튼
+        modeButton = new JButton("밤하늘");
+        modeButton.setBounds(10, 55, 100, 35);
+        modeButton.setBorderPainted(false); // 버튼 투명하게 만들기
+        modeButton.setContentAreaFilled(false); // 버튼 투명하게 만들기
+        modeButton.addActionListener(e -> toggleMode());
+        imagePanel.add(modeButton);
 
         // 멈추기 버튼
         stopButton = new JButton("멈추기");
         stopButton.setBounds(845, 60, 100, 35);
-        ImagePanel.add(stopButton);
+        imagePanel.add(stopButton);
 
         // 흑 & 백 돌 버튼 설정
         int x = 197, y = 126;
@@ -126,7 +131,7 @@ public class Main extends JFrame {
                 // 바둑돌 그림 올릴 레이블
                 labels[i][j] = new JLabel();
                 labels[i][j].setBounds(x + 10, y + 1, 78, 75);
-                ImagePanel.add(labels[i][j]);
+                imagePanel.add(labels[i][j]);
 
                 // 클릭하는 곳의 인덱스
                 int clickX = i;
@@ -134,7 +139,7 @@ public class Main extends JFrame {
 
                 // 버튼을 누르면 사진이 올려지도록
                 button[i][j].addActionListener(e -> handleButtonClick(clickX, clickY));
-                ImagePanel.add(button[i][j]);
+                imagePanel.add(button[i][j]);
                 button[i][j].setEnabled(false); // 초기 상태에서 버튼 비활성화
                 x += 73;
             }
@@ -158,11 +163,15 @@ public class Main extends JFrame {
     // 타이머 설정 메소드------------------------------------------------------------------------
     private void setTimer() {
         String time = JOptionPane.showInputDialog(this, "제한 시간을 초 단위로 입력하세요:");
-        int seconds = Integer.parseInt(time);
-        player1_timeRemaining = seconds;
-        player2_timeRemaining = seconds;
-        player1_timerLabel.setText(time);
-        player2_timerLabel.setText(time);
+        try {
+            int seconds = Integer.parseInt(time);
+            player1_timeRemaining = seconds;
+            player2_timeRemaining = seconds;
+            player1_timerLabel.setText(time);
+            player2_timerLabel.setText(time);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "올바른 숫자를 입력하세요.", "입력 오류", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // 게임 시작 메소드------------------------------------------------------------------------
@@ -227,6 +236,13 @@ public class Main extends JFrame {
                 });
             }
         }, 1000, 1000);
+    }
+
+    private void toggleMode() {
+        night = !night;
+        modeButton.setText(night ? "기본 모드" : "밤하늘");
+        imagePanel.setBackgroundImage(night ? nightImagePath : dayImagePath);
+        imagePanel.repaint();
     }
 
     private void togglePause() {
@@ -540,6 +556,26 @@ public class Main extends JFrame {
             Desktop.getDesktop().browse(new java.net.URI("https://youtu.be/6haugpRYGGs?feature=shared"));
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    // ImagePanel 클래스 정의
+    private class ImagePanel extends JPanel {
+        private Image backgroundImage;
+
+        public ImagePanel() {
+            this.backgroundImage = new ImageIcon(dayImagePath).getImage();
+        }
+
+        public void setBackgroundImage(String imagePath) {
+            this.backgroundImage = new ImageIcon(imagePath).getImage();
+            repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
     }
 
